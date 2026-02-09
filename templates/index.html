@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="cs">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Art Generátor</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            background-color: #222;
+            color: #eee;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #00ff99;
+        }
+
+        .container {
+            background: #333;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+
+        input[type=file] {
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #00ff99;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #ff5555;
+        }
+
+        /* DŮLEŽITÉ: Monospace font pro zobrazení ASCII */
+        pre {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 8px;
+            /* Malé písmo, aby se vešlo víc */
+            line-height: 0.6;
+            /* Hustší řádky */
+            white-space: pre;
+            /* Zachová mezery a odřádkování */
+            background: #111;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            /* Posuvník, pokud je obrázek moc široký */
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎨 ASCII Art Generátor</h1>
+        <form method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept="image/png, image/jpeg">
+            <br>
+            <button type="submit">Převést na ASCII</button>
+        </form>
+
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+    </div>
+
+    {% if ascii_art %}
+    <br><br>
+    <pre>{{ ascii_art }}</pre>
+    {% endif %}
+</body>
+
+</html>
