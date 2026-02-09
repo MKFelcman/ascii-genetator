@@ -4,80 +4,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASCII Art Generátor</title>
+    <title>Super ASCII Art</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        /* --- Moderní Tmavý Design --- */
         body {
-            font-family: sans-serif;
-            text-align: center;
-            background-color: #222;
-            color: #eee;
+            font-family: 'Roboto Mono', monospace;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            margin: 0;
             padding: 20px;
+            text-align: center;
         }
 
         h1 {
-            color: #00ff99;
+            color: #58a6ff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
         }
 
-        .container {
-            background: #333;
+        /* --- Ovládací Panel --- */
+        .controls {
+            background: #161b22;
             padding: 20px;
             border-radius: 10px;
+            border: 1px solid #30363d;
             display: inline-block;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
         }
 
-        input[type=file] {
-            margin: 20px 0;
+        input[type="file"] {
+            margin-bottom: 15px;
+            display: block;
+            width: 100%;
         }
 
+        select,
         button {
-            padding: 10px 20px;
-            background: #00ff99;
+            padding: 10px 15px;
+            border-radius: 5px;
             border: none;
             cursor: pointer;
+            font-family: inherit;
             font-weight: bold;
         }
 
-        .error {
-            color: #ff5555;
+        select {
+            background: #21262d;
+            color: white;
+            border: 1px solid #30363d;
+            margin-right: 10px;
         }
 
-        /* DŮLEŽITÉ: Monospace font pro zobrazení ASCII */
-        pre {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 8px;
-            /* Malé písmo, aby se vešlo víc */
-            line-height: 0.6;
-            /* Hustší řádky */
-            white-space: pre;
-            /* Zachová mezery a odřádkování */
-            background: #111;
+        button {
+            background-color: #238636;
+            color: white;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: #2ea043;
+        }
+
+        /* --- Výsledek (ASCII Art) --- */
+        .art-container {
+            width: 100%;
+            overflow-x: auto;
+            /* Aby šlo rolovat do stran */
+            background-color: #000;
             padding: 20px;
             border-radius: 5px;
-            overflow-x: auto;
-            /* Posuvník, pokud je obrázek moc široký */
-            display: inline-block;
+            box-sizing: border-box;
         }
+
+        pre {
+            font-family: 'Courier New', Courier, monospace;
+            color: #00ff00;
+            /* Hacker Green barva */
+            white-space: pre;
+            margin: 0;
+            display: inline-block;
+
+            /* DŮLEŽITÉ: Dynamická velikost podle šířky */
+            /* Pokud je šířka 100, písmo je větší. Pokud 300, písmo je titěrné. */
+        }
+
+        /* Třídy pro různé velikosti */
+        .size-100 {
+            font-size: 8px;
+            line-height: 5px;
+        }
+
+        .size-150 {
+            font-size: 6px;
+            line-height: 4px;
+        }
+
+        .size-250 {
+            font-size: 4px;
+            line-height: 2.5px;
+        }
+
+        /* HD Kvalita */
+        .size-350 {
+            font-size: 2px;
+            line-height: 1.5px;
+        }
+
+        /* Ultra HD (skoro jako fotka) */
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1>🎨 ASCII Art Generátor</h1>
+
+    <h1>📸 ASCII Art Generátor 2.0</h1>
+
+    <div class="controls">
         <form method="post" enctype="multipart/form-data">
-            <input type="file" name="file" accept="image/png, image/jpeg">
-            <br>
+            <input type="file" name="file" accept="image/*" required>
+
+            <label for="width">Kvalita (šířka):</label>
+            <select name="width" id="width">
+                <option value="100" {% if current_width==100 %}selected{% endif %}>Nízká (100 znaků)</option>
+                <option value="150" {% if current_width==150 %}selected{% endif %}>Střední (150 znaků)</option>
+                <option value="250" {% if current_width==250 %}selected{% endif %}>Vysoká HD (250 znaků)</option>
+                <option value="350" {% if current_width==350 %}selected{% endif %}>Ultra HD (350 znaků)</option>
+            </select>
+
             <button type="submit">Převést na ASCII</button>
         </form>
-
-        {% if error %}
-        <p class="error">{{ error }}</p>
-        {% endif %}
     </div>
 
-    {% if ascii_art %}
-    <br><br>
-    <pre>{{ ascii_art }}</pre>
+    {% if error %}
+    <p style="color: #ff7b72;">{{ error }}</p>
     {% endif %}
+
+    {% if ascii_art %}
+    <div class="art-container">
+        <pre class="size-{{ current_width }}">{{ ascii_art }}</pre>
+    </div>
+    <p style="font-size: 12px; color: #8b949e;">Tip: Oddal si stránku (Ctrl -), pokud se to nevejde.</p>
+    {% endif %}
+
 </body>
 
 </html>
