@@ -4,15 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color ASCII Art</title>
+    <title>ASCII Art Studio</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Mono:wght@500&display=swap"
         rel="stylesheet">
     <style>
-        /* --- Moderní čistý vzhled --- */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
-            /* Světle šedá */
             color: #1f2937;
             margin: 0;
             padding: 20px;
@@ -25,7 +23,6 @@
             margin-bottom: 20px;
         }
 
-        /* --- Ovládací karta --- */
         .controls {
             background: white;
             padding: 25px;
@@ -40,7 +37,8 @@
             width: 100%;
         }
 
-        .select-group {
+        /* Skupina pro výběry vedle sebe */
+        .options-row {
             display: flex;
             gap: 10px;
             justify-content: center;
@@ -49,16 +47,17 @@
 
         select,
         button {
-            padding: 12px 20px;
+            padding: 12px;
             border-radius: 8px;
             border: 1px solid #d1d5db;
             font-size: 14px;
             cursor: pointer;
+            flex: 1;
+            /* Aby zabraly stejné místo */
         }
 
         button {
             background-color: #2563eb;
-            /* Modrá */
             color: white;
             border: none;
             font-weight: bold;
@@ -70,10 +69,9 @@
             background-color: #1d4ed8;
         }
 
-        /* --- Výsledek --- */
         .art-wrapper {
-            background-color: #111827;
-            /* Tmavé pozadí pod obrázkem pro kontrast */
+            background-color: #0d1117;
+            /* Velmi tmavá, skoro černá */
             display: inline-block;
             padding: 20px;
             border-radius: 10px;
@@ -85,21 +83,16 @@
         .ascii-art {
             font-family: 'Roboto Mono', monospace;
             white-space: pre;
-            /* Zachová mezery */
             line-height: 0.8;
-            /* DŮLEŽITÉ: Sníží řádkování, aby to nebylo roztažené */
             letter-spacing: 0;
             font-weight: bold;
             text-align: left;
-            /* Zarovnání vlevo je pro ASCII nutnost */
         }
 
-        /* Velikosti písma podle nastavení */
         .size-50 {
             font-size: 8px;
         }
 
-        /* Pro mobil */
         .size-100 {
             font-size: 6px;
         }
@@ -116,24 +109,27 @@
 
 <body>
 
-    <h1>🎨 Color ASCII Generator</h1>
+    <h1>🎨 ASCII Art Studio</h1>
 
     <div class="controls">
         <form method="post" enctype="multipart/form-data">
             <input type="file" name="file" accept="image/*" required>
 
-            <div class="select-group">
-                <label for="width" style="align-self: center;">Velikost:</label>
+            <div class="options-row">
                 <select name="width" id="width">
-                    <option value="50" {% if current_width==50 %}selected{% endif %}>📱 Mobil (50 znaků)</option>
-                    <option value="100" {% if current_width==100 %}selected{% endif %}>💻 PC Standard (100 znaků)
-                    </option>
-                    <option value="150" {% if current_width==150 %}selected{% endif %}>🖥️ HD (150 znaků)</option>
-                    <option value="200" {% if current_width==200 %}selected{% endif %}>🔥 Ultra (200 znaků)</option>
+                    <option value="50" {% if current_width==50 %}selected{% endif %}>📱 Mobil</option>
+                    <option value="100" {% if current_width==100 %}selected{% endif %}>💻 PC</option>
+                    <option value="150" {% if current_width==150 %}selected{% endif %}>🖥️ HD</option>
+                    <option value="200" {% if current_width==200 %}selected{% endif %}>🔥 Ultra</option>
+                </select>
+
+                <select name="mode" id="mode">
+                    <option value="color" {% if current_mode=='color' %}selected{% endif %}>🌈 Barevné</option>
+                    <option value="bw" {% if current_mode=='bw' %}selected{% endif %}>⚫ Černobílé</option>
                 </select>
             </div>
 
-            <button type="submit">Obarvit a převést</button>
+            <button type="submit">Generovat</button>
         </form>
     </div>
 
@@ -148,7 +144,7 @@
         </div>
     </div>
     <p style="font-size: 12px; color: #6b7280; margin-top: 10px;">
-        Tip: Na mobilu si obrázek přibližuj prsty.
+        Tip: Pro nejlepší efekt u černobílé fotky zvol HD kvalitu.
     </p>
     {% endif %}
 
