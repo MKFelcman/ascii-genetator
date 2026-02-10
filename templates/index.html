@@ -4,148 +4,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super ASCII Art</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>Color ASCII Art</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Mono:wght@500&display=swap"
+        rel="stylesheet">
     <style>
-        /* --- Moderní Tmavý Design --- */
+        /* --- Moderní čistý vzhled --- */
         body {
-            font-family: 'Roboto Mono', monospace;
-            background-color: #0d1117;
-            color: #c9d1d9;
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            /* Světle šedá */
+            color: #1f2937;
             margin: 0;
             padding: 20px;
             text-align: center;
         }
 
         h1 {
-            color: #58a6ff;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 30px;
+            color: #111827;
+            font-weight: 800;
+            margin-bottom: 20px;
         }
 
-        /* --- Ovládací Panel --- */
+        /* --- Ovládací karta --- */
         .controls {
-            background: #161b22;
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid #30363d;
-            display: inline-block;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            margin-bottom: 30px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 0 auto 30px auto;
         }
 
         input[type="file"] {
             margin-bottom: 15px;
-            display: block;
             width: 100%;
+        }
+
+        .select-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
         }
 
         select,
         button {
-            padding: 10px 15px;
-            border-radius: 5px;
-            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 14px;
             cursor: pointer;
-            font-family: inherit;
-            font-weight: bold;
-        }
-
-        select {
-            background: #21262d;
-            color: white;
-            border: 1px solid #30363d;
-            margin-right: 10px;
         }
 
         button {
-            background-color: #238636;
+            background-color: #2563eb;
+            /* Modrá */
             color: white;
+            border: none;
+            font-weight: bold;
             transition: background 0.2s;
+            width: 100%;
         }
 
         button:hover {
-            background-color: #2ea043;
+            background-color: #1d4ed8;
         }
 
-        /* --- Výsledek (ASCII Art) --- */
-        .art-container {
-            width: 100%;
-            overflow-x: auto;
-            /* Aby šlo rolovat do stran */
-            background-color: #000;
-            padding: 20px;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-        pre {
-            font-family: 'Courier New', Courier, monospace;
-            color: #00ff00;
-            /* Hacker Green barva */
-            white-space: pre;
-            margin: 0;
+        /* --- Výsledek --- */
+        .art-wrapper {
+            background-color: #111827;
+            /* Tmavé pozadí pod obrázkem pro kontrast */
             display: inline-block;
-
-            /* DŮLEŽITÉ: Dynamická velikost podle šířky */
-            /* Pokud je šířka 100, písmo je větší. Pokud 300, písmo je titěrné. */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+            overflow: auto;
+            max-width: 100%;
         }
 
-        /* Třídy pro různé velikosti */
-        .size-100 {
+        .ascii-art {
+            font-family: 'Roboto Mono', monospace;
+            white-space: pre;
+            /* Zachová mezery */
+            line-height: 0.8;
+            /* DŮLEŽITÉ: Sníží řádkování, aby to nebylo roztažené */
+            letter-spacing: 0;
+            font-weight: bold;
+            text-align: left;
+            /* Zarovnání vlevo je pro ASCII nutnost */
+        }
+
+        /* Velikosti písma podle nastavení */
+        .size-50 {
             font-size: 8px;
-            line-height: 5px;
+        }
+
+        /* Pro mobil */
+        .size-100 {
+            font-size: 6px;
         }
 
         .size-150 {
-            font-size: 6px;
-            line-height: 4px;
-        }
-
-        .size-250 {
             font-size: 4px;
-            line-height: 2.5px;
         }
 
-        /* HD Kvalita */
-        .size-350 {
-            font-size: 2px;
-            line-height: 1.5px;
+        .size-200 {
+            font-size: 3px;
         }
-
-        /* Ultra HD (skoro jako fotka) */
     </style>
 </head>
 
 <body>
 
-    <h1>📸 ASCII Art Generátor 2.0</h1>
+    <h1>🎨 Color ASCII Generator</h1>
 
     <div class="controls">
         <form method="post" enctype="multipart/form-data">
             <input type="file" name="file" accept="image/*" required>
 
-            <label for="width">Kvalita (šířka):</label>
-            <select name="width" id="width">
-                <option value="100" {% if current_width==100 %}selected{% endif %}>Nízká (100 znaků)</option>
-                <option value="150" {% if current_width==150 %}selected{% endif %}>Střední (150 znaků)</option>
-                <option value="250" {% if current_width==250 %}selected{% endif %}>Vysoká HD (250 znaků)</option>
-                <option value="350" {% if current_width==350 %}selected{% endif %}>Ultra HD (350 znaků)</option>
-            </select>
+            <div class="select-group">
+                <label for="width" style="align-self: center;">Velikost:</label>
+                <select name="width" id="width">
+                    <option value="50" {% if current_width==50 %}selected{% endif %}>📱 Mobil (50 znaků)</option>
+                    <option value="100" {% if current_width==100 %}selected{% endif %}>💻 PC Standard (100 znaků)
+                    </option>
+                    <option value="150" {% if current_width==150 %}selected{% endif %}>🖥️ HD (150 znaků)</option>
+                    <option value="200" {% if current_width==200 %}selected{% endif %}>🔥 Ultra (200 znaků)</option>
+                </select>
+            </div>
 
-            <button type="submit">Převést na ASCII</button>
+            <button type="submit">Obarvit a převést</button>
         </form>
     </div>
 
     {% if error %}
-    <p style="color: #ff7b72;">{{ error }}</p>
+    <p style="color: red;">{{ error }}</p>
     {% endif %}
 
     {% if ascii_art %}
-    <div class="art-container">
-        <pre class="size-{{ current_width }}">{{ ascii_art }}</pre>
+    <div class="art-wrapper">
+        <div class="ascii-art size-{{ current_width }}">
+            {{ ascii_art }}
+        </div>
     </div>
-    <p style="font-size: 12px; color: #8b949e;">Tip: Oddal si stránku (Ctrl -), pokud se to nevejde.</p>
+    <p style="font-size: 12px; color: #6b7280; margin-top: 10px;">
+        Tip: Na mobilu si obrázek přibližuj prsty.
+    </p>
     {% endif %}
 
 </body>

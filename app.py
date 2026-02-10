@@ -4,47 +4,55 @@ import io
 
 app = Flask(__name__)
 
-# --- Vylepšená sada znaků (70 úrovní jasu) ---
-ASCII_CHARS = ["$", "@", "B", "%", "8", "&", "W", "M", "#", "*", "o", "a", "h", "k", "b", "d", "p", "q", "w", "m", "Z", "O", "0", "Q", "L", "C", "J", "U", "Y", "X", "z", "c", "v", "u", "n", "x", "r", "j", "f", "t", "/", "\\", "|", "(", ")", "1", "{", "}", "[", "]", "?", "-", "_", "+", "~", "<", ">", "i", "!", "l", "I", ";", ":", ",", "\"", "^", "`", ".", " "]
+# --- Znaky pro stínování (od nejtmavšího po nejsvětlejší) ---
+ASCII_CHARS = ["@", "%", "#", "*", "+", "=", "-", ":", ".", " "]
 
 def resize_image(image, new_width=100):
     width, height = image.size
     ratio = height / width
-    # Korekce poměru stran (znaky jsou vysoké)
-    new_height = int(new_width * ratio * 0.55)
+    # DŮLEŽITÉ: Koeficient 0.5 kompenzuje to, že písmenka jsou 2x vyšší než širší
+    new_height = int(new_width * ratio * 0.5)
     resized_image = image.resize((new_width, new_height))
     return resized_image
 
-def grayify(image):
-    return image.convert("L")
-
-def pixels_to_ascii(image):
+def pixels_to_color_ascii(image):
     pixels = image.getdata()
-    # Mapování pixelů na znaky
-    # 255 (bílá) / délka seznamu znaků = krok
-    interval = 256 / len(ASCII_CHARS)
-    characters = "".join([ASCII_CHARS[int(pixel // interval)] for pixel in pixels])
-    return characters
-
-def convert_image_to_ascii(image, new_width=100):
-    new_image_data = pixels_to_ascii(grayify(resize_image(image, new_width)))
+    width, height = image.size
+    ascii_str = ""
     
-    pixel_count = len(new_image_data)
-    ascii_image = "\n".join([new_image_data[index:(index+new_width)] for index in range(0, pixel_count, new_width)])
-    return ascii_image
+    # Procházíme pixely
+    for i, pixel in enumerate(pixels):
+        # Pixel je (R, G, B) - například (255, 0, 0) je červená
+        r, g, b = pixel
+        
+        # Spočítáme jas pro výběr znaku (průměr barev)
+        brightness = int((r + g + b) / 3)
+        char_index = int(brightness / 255 * (len(ASCII_CHARS) - 1))
+        char = ASCII_CHARS[char_index]
+        
+        # Pokud je znak mezera, nahradíme ji nedělitelnou mezerou, aby se HTML nerozsypalo
+        if char == " ":
+            char = "&nbsp;"
+            
+        # Zabalíme znak do barvy
+        ascii_str += f'<span style="color: rgb({r},{g},{b})">{char}</span>'
+        
+        # Na konci řádku přidáme odřádkování <br>
+        if (i + 1) % width == 0:
+            ascii_str += "<br>"
+            
+    return ascii_str
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     ascii_art = None
-    width = 150 # Výchozí šířka
+    width = 80 # Výchozí šířka
     
     if request.method == "POST":
         if 'file' not in request.files:
             return render_template('index.html', error="Žádný soubor.")
         
         file = request.files['file']
-        
-        # Získání šířky z formuláře (pokud uživatel vybral)
         width_str = request.form.get('width')
         if width_str:
             width = int(width_str)
@@ -54,9 +62,20 @@ def index():
 
         try:
             image = Image.open(io.BytesIO(file.read()))
-            ascii_art = convert_image_to_ascii(image, new_width=width)
+            # Převedeme na RGB (aby to fungovalo i u PNG s průhledností)
+            image = image.convert("RGB")
+            
+            # Změna velikosti a převod
+            resized_img = resize_image(image, new_width=width)
+            ascii_art = pixels_to_color_ascii(resized_img)
+            
         except Exception as e:
              return render_template('index.html', error=f"Chyba: {e}")
+
+    # Posíláme 'safe' HTML, aby Flask nevypsal <span> jako text, ale jako kód
+    from markupsafe import Markup
+    if ascii_art:
+        ascii_art = Markup(ascii_art)
 
     return render_template("index.html", ascii_art=ascii_art, current_width=width)
 
